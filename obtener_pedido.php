@@ -1,6 +1,8 @@
 <?php
-header('Content-Type: application/json');
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
 
+   
 $conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
 if ($conexion->connect_error) {
     echo json_encode(['error' => 'Error de conexión']);

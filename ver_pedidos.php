@@ -1,9 +1,8 @@
 <?php
-$conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
-}
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
 
+   
 // Manejar cambio de estado via AJAX
 if (isset($_POST['cambiar_estado'])) {
     $id = (int)$_POST['id'];

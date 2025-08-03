@@ -1,8 +1,6 @@
 <?php
-$conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
-}
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 

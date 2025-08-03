@@ -1,7 +1,7 @@
 <?php
-// Conectar a la base de datos
-$conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
-
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
+   
 // Verificar conexión
 if ($conexion->connect_error) {
     die("Error de conexión: " . $conexion->connect_error);
