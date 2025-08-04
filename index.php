@@ -1,7 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
-
+?>
 
 <!DOCTYPE html>
 <html lang="es">
@@ -1383,4 +1383,5 @@ function limpiarTodosLosDatos() {
 </script>
 
 </body>
+
 </html>
