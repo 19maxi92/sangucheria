@@ -1,6 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
+?>
 
    
 // Manejar cambio de estado via AJAX
@@ -404,5 +405,6 @@ setInterval(function() {
 
 </body>
 </html>
+
 
 <?php $conexion->close(); ?>
