@@ -1,6 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
+?>
 
    
 $conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
@@ -35,4 +36,5 @@ if ($id > 0) {
 }
 
 $conexion->close();
+
 ?>
