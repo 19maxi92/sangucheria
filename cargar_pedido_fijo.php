@@ -1,7 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
-
+?>
    
 if (isset($_GET['id'], $_GET['cantidad'])) {
     $id = intval($_GET['id']);
@@ -75,4 +75,5 @@ if (isset($_GET['id'], $_GET['cantidad'])) {
 $conexion->close();
 header("Location: clientes_fijos.php");
 exit;
+
 ?>
