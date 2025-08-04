@@ -1,7 +1,7 @@
 <?php
 require_once '/var/www/html/sangucheria/config.php';
 $conexion = getConnection();
-
+?>
 
 // Manejar operaciones AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -328,5 +328,6 @@ function eliminarCliente(id) {
 
 </body>
 </html>
+
 
 <?php $conexion->close(); ?>
