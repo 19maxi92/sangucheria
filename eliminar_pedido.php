@@ -1,6 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
+?>
 
 $id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
@@ -20,3 +21,4 @@ if ($id > 0) {
 
 $conexion->close();
 ?>
+
