@@ -1,6 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
+?>
 
 // Configurar headers para descarga de Excel
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
@@ -59,4 +60,5 @@ while ($pedido = $resultado->fetch_assoc()) {
 }
 
 $conexion->close();
+
 ?>
