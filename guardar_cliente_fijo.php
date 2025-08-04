@@ -1,6 +1,7 @@
 <?php
    require_once '/var/www/html/sangucheria/config.php';
    $conexion = getConnection();
+?>
 
    
 // Verificar conexión
@@ -31,4 +32,5 @@ if ($conexion->query($sql) === TRUE) {
 }
 
 $conexion->close();
+
 ?>
