@@ -1,16 +1,34 @@
 <?php
-   require_once '/var/www/html/sangucheria/config.php';
-   $conexion = getConnection();
-?>
-   
-if (isset($_GET['id'], $_GET['cantidad'])) {
-    $id = intval($_GET['id']);
-    $cantidad_pedidos = intval($_GET['cantidad']);
-    $cantidad_pedidos = max(1, $cantidad_pedidos);
+require_once '/var/www/html/sangucheria/config.php';
 
-    $resultado = $conexion->query("SELECT * FROM clientes_fijos WHERE id = $id");
-
-    if ($resultado && $cliente = $resultado->fetch_assoc()) {
+try {
+    $conexion = getConnection();
+    
+    // Validar parámetros de entrada
+    if (!isset($_GET['id']) || !isset($_GET['cantidad'])) {
+        $_SESSION['error'] = 'Parámetros inválidos';
+        header("Location: clientes_fijos.php");
+        exit;
+    }
+    
+    $id = filter_var($_GET['id'], FILTER_VALIDATE_INT);
+    $cantidad_pedidos = filter_var($_GET['cantidad'], FILTER_VALIDATE_INT);
+    
+    if ($id === false || $cantidad_pedidos === false || $id <= 0 || $cantidad_pedidos <= 0) {
+        $_SESSION['error'] = 'Parámetros inválidos';
+        header("Location: clientes_fijos.php");
+        exit;
+    }
+    
+    $cantidad_pedidos = max(1, min(10, $cantidad_pedidos)); // Límite de 10 pedidos
+    
+    // Usar prepared statement para seguridad
+    $stmt = $conexion->prepare("SELECT * FROM clientes_fijos WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+    
+    if ($cliente = $resultado->fetch_assoc()) {
         // Definir precios según el producto
         $precios = [
             '48 Jamón y Queso' => 22000,
@@ -24,19 +42,30 @@ if (isset($_GET['id'], $_GET['cantidad'])) {
         
         $producto = $cliente['producto'];
         $precio_unitario = isset($precios[$producto]) ? $precios[$producto] : 0;
-        $cantidad_sandwiches = (int)explode(' ', $producto)[0]; // Extraer cantidad del nombre del producto
+        
+        if ($precio_unitario === 0) {
+            $_SESSION['error'] = 'Producto no válido';
+            header("Location: clientes_fijos.php");
+            exit;
+        }
+        
+        // Extraer cantidad del nombre del producto
+        $cantidad_sandwiches = (int)explode(' ', $producto)[0];
+        $planchas = round($cantidad_sandwiches / 24, 2);
+        
+        // Preparar statement para insertar pedidos
+        $sql_insert = "INSERT INTO pedidos 
+                      (fecha, nombre, apellido, cantidad, planchas, contacto, direccion, 
+                       modalidad, observaciones, productos, total, pago, estado) 
+                      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'Efectivo', 'Pendiente')";
+        
+        $stmt_insert = $conexion->prepare($sql_insert);
+        
+        $pedidos_creados = 0;
         
         // Crear múltiples pedidos
         for ($i = 0; $i < $cantidad_pedidos; $i++) {
-            $nombre = $conexion->real_escape_string($cliente['nombre']);
-            $apellido = $conexion->real_escape_string($cliente['apellido']);
-            $contacto = $conexion->real_escape_string($cliente['contacto']);
-            $direccion = $conexion->real_escape_string($cliente['direccion']);
-            $modalidad = $conexion->real_escape_string($cliente['modalidad']);
-            $observacion = $conexion->real_escape_string($cliente['observacion']);
             $fecha = date('Y-m-d H:i:s');
-            $planchas = round($cantidad_sandwiches / 24, 2);
-            $total = $precio_unitario;
             
             // Crear JSON del producto
             $productos_json = json_encode([
@@ -44,36 +73,58 @@ if (isset($_GET['id'], $_GET['cantidad'])) {
                     'producto' => $producto,
                     'precio' => $precio_unitario,
                     'cantidad' => $cantidad_sandwiches,
-                    'sabores' => $observacion,
+                    'sabores' => $cliente['observacion'],
                     'id' => time() + $i
                 ]
-            ]);
+            ], JSON_UNESCAPED_UNICODE);
             
-            $productos_json_escaped = $conexion->real_escape_string($productos_json);
-
-            $sql = "INSERT INTO pedidos (
-                        fecha, nombre, apellido, cantidad, planchas, contacto, direccion, 
-                        modalidad, observaciones, productos, total, pago, estado
-                    ) VALUES (
-                        '$fecha', '$nombre', '$apellido', $cantidad_sandwiches, $planchas, 
-                        '$contacto', '$direccion', '$modalidad', '$observacion', 
-                        '$productos_json_escaped', $total, 'Efectivo', 'Pendiente'
-                    )";
+            $stmt_insert->bind_param(
+                "sssidsssssid",
+                $fecha,
+                $cliente['nombre'],
+                $cliente['apellido'],
+                $cantidad_sandwiches,
+                $planchas,
+                $cliente['contacto'],
+                $cliente['direccion'],
+                $cliente['modalidad'],
+                $cliente['observacion'],
+                $productos_json,
+                $precio_unitario
+            );
             
-            $conexion->query($sql);
+            if ($stmt_insert->execute()) {
+                $pedidos_creados++;
+            }
         }
         
+        $stmt_insert->close();
+        
         // Mensaje de éxito
-        $mensaje = $cantidad_pedidos > 1 ? 
-            "$cantidad_pedidos pedidos creados para {$cliente['nombre']} {$cliente['apellido']}" :
-            "Pedido creado para {$cliente['nombre']} {$cliente['apellido']}";
-            
-        $_SESSION['mensaje'] = $mensaje;
+        if ($pedidos_creados > 0) {
+            $mensaje = $pedidos_creados > 1 ? 
+                "$pedidos_creados pedidos creados para {$cliente['nombre']} {$cliente['apellido']}" :
+                "Pedido creado para {$cliente['nombre']} {$cliente['apellido']}";
+                
+            $_SESSION['mensaje'] = $mensaje;
+        } else {
+            $_SESSION['error'] = 'No se pudieron crear los pedidos';
+        }
+    } else {
+        $_SESSION['error'] = 'Cliente no encontrado';
+    }
+    
+    $stmt->close();
+    
+} catch (Exception $e) {
+    error_log("Error en cargar_pedido_fijo.php: " . $e->getMessage());
+    $_SESSION['error'] = 'Error interno del servidor';
+} finally {
+    if (isset($conexion)) {
+        $conexion->close();
     }
 }
 
-$conexion->close();
 header("Location: clientes_fijos.php");
 exit;
-
 ?>

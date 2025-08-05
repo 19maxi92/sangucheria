@@ -1,98 +1,1647 @@
+<div class="text-center mt-4">
+    <button class="btn btn-primary btn-lg shadow" onclick="agregarPersonalizado()">
+        <i class="bi bi-cart-plus"></i> Agregar al Carrito - $<span id="precioPersonalizado">500</span>
+    </button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-lg-4">
+<div class="card border-info shadow">
+<div class="card-header bg-info text-white">
+<h5 class="mb-0">
+    <i class="bi bi-clipboard-data"></i> Resumen
+</h5>
+</div>
+<div class="card-body">
+<div id="resumenPersonalizado">
+    <div class="mb-3">
+        <div class="d-flex justify-content-between">
+            <span>Cantidad:</span>
+            <span class="fw-bold" id="resumenCantidad">1</span>
+        </div>
+        <div class="d-flex justify-content-between">
+            <span>Precio unitario:</span>
+            <span class="fw-bold">$500</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between">
+            <span class="h6">Total:</span>
+            <span class="h6 text-primary">$<span id="resumenTotal">500</span></span>
+        </div>
+    </div>
+    <div id="resumenSabores">
+        <p class="text-muted text-center">
+            <i class="bi bi-arrow-up"></i> Selecciona sabores arriba
+        </p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PESTAÑA NUEVO PEDIDO -->
+<div class="tab-pane fade" id="pedido" role="tabpanel">
+<div class="row">
+<div class="col-lg-8">
+<div class="card shadow">
+<div class="card-header bg-primary text-white">
+<h5 class="mb-0">
+<i class="bi bi-file-earmark-plus"></i> Nuevo Pedido
+</h5>
+</div>
+<div class="card-body">
+<form id="pedidoForm">
+<input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+<div class="row g-3">
+<div class="col-md-6">
+    <label for="nombre" class="form-label">
+        <i class="bi bi-person"></i> Nombre: <span class="text-danger">*</span>
+    </label>
+    <input type="text" class="form-control" name="nombre" required maxlength="100" 
+           placeholder="Nombre del cliente">
+</div>
+<div class="col-md-6">
+    <label for="apellido" class="form-label">
+        <i class="bi bi-person"></i> Apellido: <span class="text-danger">*</span>
+    </label>
+    <input type="text" class="form-control" name="apellido" required maxlength="100"
+           placeholder="Apellido del cliente">
+</div>
+<div class="col-md-6">
+    <label for="contacto" class="form-label">
+        <i class="bi bi-telephone"></i> Número de Contacto: <span class="text-danger">*</span>
+    </label>
+    <input type="tel" class="form-control" name="contacto" required maxlength="20"
+           placeholder="Ej: 11 5123-4567">
+</div>
+<div class="col-md-6">
+    <label for="direccion" class="form-label">
+        <i class="bi bi-geo-alt"></i> Dirección:
+    </label>
+    <input type="text" class="form-control" name="direccion" maxlength="255"
+           placeholder="Dirección de entrega">
+</div>
+<div class="col-md-6">
+    <label class="form-label">
+        <i class="bi bi-truck"></i> Modalidad: <span class="text-danger">*</span>
+    </label><br>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="modalidad" id="retiro" value="Retira" required>
+        <label class="form-check-label" for="retiro">
+            <i class="bi bi-shop"></i> Retira en Local
+        </label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="modalidad" id="envio" value="Envío" required>
+        <label class="form-check-label" for="envio">
+            <i class="bi bi-truck"></i> Envío a Domicilio
+        </label>
+    </div>
+</div>
+<div class="col-md-6">
+    <label class="form-label">
+        <i class="bi bi-credit-card"></i> Forma de Pago: <span class="text-danger">*</span>
+    </label><br>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="pago" id="efectivo" value="Efectivo" required onchange="actualizarPreciosPago()">
+        <label class="form-check-label" for="efectivo">
+            <i class="bi bi-cash"></i> Efectivo <small class="text-success">(Con descuento)</small>
+        </label>
+    </div>
+    <div class="form-check form-check-inline">
+        <input class="form-check-input" type="radio" name="pago" id="transferencia" value="Transferencia" required onchange="actualizarPreciosPago()">
+        <label class="form-check-label" for="transferencia">
+            <i class="bi bi-credit-card"></i> Transferencia
+        </label>
+    </div>
+</div>
+<div class="col-12">
+    <label for="observaciones" class="form-label">
+        <i class="bi bi-chat-square-text"></i> Observaciones Adicionales:
+    </label>
+    <textarea class="form-control" name="observaciones" rows="3" maxlength="500"
+              placeholder="Observaciones generales del pedido..."></textarea>
+</div>
+</div>
+<hr>
+<div class="text-center">
+<button type="submit" class="btn btn-success btn-lg shadow">
+    <i class="bi bi-save"></i> Guardar Pedido
+</button>
+</div>
+</form>
+</div>
+</div>
+</div>
+
+<!-- Resumen del pedido -->
+<div class="col-lg-4">
+<div class="card border-success shadow">
+<div class="card-header bg-success text-white">
+<h5 class="mb-0">
+<i class="bi bi-clipboard-check"></i> Resumen del Pedido
+</h5>
+</div>
+<div class="card-body">
+<div id="resumenPedido">
+<div class="text-center text-muted">
+<i class="bi bi-cart-x" style="font-size: 3rem;"></i>
+<p class="mt-2">Selecciona productos del menú para agregarlos aquí</p>
+</div>
+</div>
+<hr>
+<div class="d-flex justify-content-between align-items-center">
+<strong class="h5">Total: $<span id="totalPedido">0</span></strong>
+<span class="badge bg-primary" id="cantidadProductosPedido">0 productos</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Footer -->
+<div class="footer-info">
+<div class="container text-center">
+<div class="row">
+<div class="col-md-4">
+<h6><i class="bi bi-shop"></i> <?= APP_NAME ?></h6>
+<p class="mb-0">Los mejores sándwiches de la zona</p>
+</div>
+<div class="col-md-4">
+<h6><i class="bi bi-telephone"></i> Contacto</h6>
+<p class="mb-0"><?= APP_PHONE ?></p>
+</div>
+<div class="col-md-4">
+<h6><i class="bi bi-clock"></i> Horarios</h6>
+<p class="mb-0">Lunes a Domingo - 24hs</p>
+</div>
+</div>
+<hr class="my-3">
+<small>&copy; <?= date('Y') ?> <?= APP_NAME ?>. Sistema de gestión de pedidos.</small>
+</div>
+</div>
+
+<!-- Modal para seleccionar sabores premium con sumadores -->
+<div class="modal fade" id="modalSaboresPremium" tabindex="-1">
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+<div class="modal-header bg-warning">
+<h5 class="modal-title">
+<i class="bi bi-star-fill"></i> Configurar Sabores Premium
+</h5>
+<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body">
+<div class="alert alert-info">
+<i class="bi bi-info-circle"></i>
+<strong>Selecciona <span id="totalSandwichesPremium">6 sabores</span></strong><br>
+<small>Puedes repetir sabores. Cada contador representa cuántas veces quieres ese sabor.</small>
+</div>
+<div class="row" id="listaSaboresPremium">
+<!-- Sabores con sumadores se cargan aquí -->
+</div>
+<div class="mt-3 text-center">
+<div class="progress mb-2">
+<div class="progress-bar" id="progressSabores" role="progressbar" style="width: 0%"></div>
+</div>
+<strong>Sabores seleccionados: <span id="saboresAsignados">0</span> / <span id="maxSandwiches">6</span></strong>
+</div>
+</div>
+<div class="modal-footer">
+<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+<i class="bi bi-x-circle"></i> Cancelar
+</button>
+<button type="button" class="btn btn-success" onclick="confirmarSaboresPremium()">
+<i class="bi bi-check-circle"></i> Confirmar Sabores
+</button>
+</div>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Variables globales
+let carrito = [];
+let saboresPremium = ['Jamón y Queso', 'Ananá', 'Atún', 'Berenjena', 'Durazno', 'Jamón Crudo', 'Morrón', 'Palmito', 'Panceta', 'Pollo', 'Roquefort', 'Salame'];
+let productoTemporal = null;
+let saboresPersonalizadosSeleccionados = {};
+let saboresPorPlanchasSeleccionados = {};
+
+// Precios de productos
+const precios = {
+'48 Jamón y Queso': { efectivo: 22000, transferencia: 24000 },
+'48 Surtidos Clásicos': { efectivo: 20000, transferencia: 22000 },
+'48 Surtidos Especiales': { efectivo: 22000, transferencia: 24000 },
+'48 Surtidos Premium': { efectivo: 42000, transferencia: 44000 },
+'24 Jamón y Queso': { efectivo: 11000, transferencia: 12000 },
+'24 Surtidos': { efectivo: 11000, transferencia: 12000 },
+'24 Surtidos Premium': { efectivo: 21000, transferencia: 22000 }
+};
+
+// Mostrar loading
+function showLoading() {
+document.getElementById('loadingSpinner').style.display = 'block';
+}
+
+// Ocultar loading
+function hideLoading() {
+document.getElementById('loadingSpinner').style.display = 'none';
+}
+
+// Inicializar sabores por planchas
+function inicializarSaboresPorPlanchas() {
+const contenedor = document.getElementById('saboresPorPlanchas');
+contenedor.innerHTML = '';
+
+saboresPremium.forEach(sabor => {
+saboresPorPlanchasSeleccionados[sabor] = 0;
+
+const div = document.createElement('div');
+div.className = 'col-md-6 mb-3';
+div.innerHTML = `
+<div class="sabor-item">
+<div class="d-flex justify-content-between align-items-center">
+<span><strong><i class="bi bi-star text-warning"></i> ${sabor}</strong></span>
+<div class="d-flex align-items-center">
+<button type="button" class="btn btn-outline-danger btn-contador" onclick="cambiarCantidadSaborPlancha('${sabor}', -1)">
+<i class="bi bi-dash"></i>
+</button>
+<input type="number" class="form-control contador-sabor mx-2" id="plancha_${sabor}" value="0" min="0" readonly>
+<button type="button" class="btn btn-outline-success btn-contador" onclick="cambiarCantidadSaborPlancha('${sabor}', 1)">
+<i class="bi bi-plus"></i>
+</button>
+</div>
+</div>
+</div>
+`;
+contenedor.appendChild(div);
+});
+}
+
+// Cambiar cantidad de planchas
+function cambiarCantidadPlanchas(cambio) {
+const cantidadActual = parseInt(document.getElementById('cantidadPlanchas').value);
+const nuevaCantidad = Math.max(1, Math.min(20, cantidadActual + cambio)); // Límite máximo de 20
+
+document.getElementById('cantidadPlanchas').value = nuevaCantidad;
+document.getElementById('totalSandwichesPlanchas').textContent = nuevaCantidad * 8;
+document.getElementById('saboresASeleccionar').textContent = nuevaCantidad;
+document.getElementById('precioPorPlanchas').textContent = (nuevaCantidad * 4000).toLocaleString();
+
+// Actualizar resumen
+document.getElementById('resumenCantidadPlanchas').textContent = nuevaCantidad;
+document.getElementById('resumenTotalSandwiches').textContent = nuevaCantidad * 8;
+document.getElementById('resumenTotalPlanchas').textContent = (nuevaCantidad * 4000).toLocaleString();
+
+// Resetear sabores si se reduce la cantidad
+const totalSaboresSeleccionados = Object.values(saboresPorPlanchasSeleccionados).reduce((a, b) => a + b, 0);
+if (totalSaboresSeleccionados > nuevaCantidad) {
+Object.keys(saboresPorPlanchasSeleccionados).forEach(sabor => {
+saboresPorPlanchasSeleccionados[sabor] = 0;
+document.getElementById(`plancha_${sabor}`).value = 0;
+});
+actualizarResumenPlanchas();
+}
+}
+
+// Cambiar cantidad de sabor por plancha
+function cambiarCantidadSaborPlancha(sabor, cambio) {
+const cantidadPlanchas = parseInt(document.getElementById('cantidadPlanchas').value);
+const totalSaboresActual = Object.values(saboresPorPlanchasSeleccionados).reduce((a, b) => a + b, 0);
+
+let nuevaCantidad = saboresPorPlanchasSeleccionados[sabor] + cambio;
+
+if (nuevaCantidad < 0) nuevaCantidad = 0;
+if (cambio > 0 && totalSaboresActual >= cantidadPlanchas) {
+showAlert('warning', `Ya tienes ${cantidadPlanchas} sabores seleccionados (1 por plancha).`);
+return;
+}
+
+saboresPorPlanchasSeleccionados[sabor] = nuevaCantidad;
+document.getElementById(`plancha_${sabor}`).value = nuevaCantidad;
+actualizarResumenPlanchas();
+}
+
+// Actualizar resumen de planchas
+function actualizarResumenPlanchas() {
+const resumenSabores = document.getElementById('resumenSaboresPlanchas');
+const saboresSeleccionados = Object.entries(saboresPorPlanchasSeleccionados)
+.filter(([sabor, cantidad]) => cantidad > 0)
+.map(([sabor, cantidad]) => `<span class="badge bg-primary me-1 mb-1">${sabor}: ${cantidad}</span>`)
+.join('');
+
+if (saboresSeleccionados) {
+resumenSabores.innerHTML = `<div class="mb-2"><strong>Sabores:</strong></div>${saboresSeleccionados}`;
+} else {
+resumenSabores.innerHTML = '<p class="text-muted text-center"><i class="bi bi-arrow-up"></i> Selecciona sabores arriba</p>';
+}
+}
+
+// Agregar pedido por planchas al carrito
+function agregarPedidoPlanchas() {
+const cantidadPlanchas = parseInt(document.getElementById('cantidadPlanchas').value);
+const totalSaboresSeleccionados = Object.values(saboresPorPlanchasSeleccionados).reduce((a, b) => a + b, 0);
+
+if (totalSaboresSeleccionados !== cantidadPlanchas) {
+showAlert('warning', `Debes seleccionar exactamente ${cantidadPlanchas} sabores (1 por plancha). Tienes ${totalSaboresSeleccionados} seleccionados.`);
+return;
+}
+
+const saboresSeleccionados = Object.entries(saboresPorPlanchasSeleccionados)
+.filter(([sabor, cant]) => cant > 0)
+.map(([sabor, cant]) => `${sabor} (${cant} plancha${cant > 1 ? 's' : ''})`)
+.join(', ');
+
+const item = {
+producto: `Pedido por Planchas (${cantidadPlanchas} plancha${cantidadPlanchas > 1 ? 's' : ''})`,
+precio: cantidadPlanchas * 4000,
+cantidad: cantidadPlanchas * 8,
+sabores: saboresSeleccionados,
+id: Date.now(),
+porPlanchas: true,
+planchas: cantidadPlanchas
+};
+
+carrito.push(item);
+actualizarCarrito();
+mostrarCarrito();
+
+// Limpiar selección
+Object.keys(saboresPorPlanchasSeleccionados).forEach(sabor => {
+saboresPorPlanchasSeleccionados[sabor] = 0;
+document.getElementById(`plancha_${sabor}`).value = 0;
+});
+document.getElementById('cantidadPlanchas').value = 1;
+cambiarCantidadPlanchas(0);
+actualizarResumenPlanchas();
+
+showAlert('success', 'Pedido por planchas agregado al carrito');
+}
+
+// Inicializar sabores personalizados
+function inicializarSaboresPersonalizados() {
+const contenedor = document.getElementById('saboresPersonalizados');
+contenedor.innerHTML = '';
+
+saboresPremium.forEach(sabor => {
+saboresPersonalizadosSeleccionados[sabor] = 0;
+
+const div = document.createElement('div');
+div.className = 'col-md-6 mb-3';
+div.innerHTML = `
+<div class="sabor-item">
+<div class="d-flex justify-content-between align-items-center">
+<span><strong><i class="bi bi-star text-warning"></i> ${sabor}</strong></span>
+<div class="d-flex align-items-center">
+<button type="button" class="btn btn-outline-danger btn-contador" onclick="cambiarCantidadPersonalizado('${sabor}', -1)">
+<i class="bi bi-dash"></i>
+</button>
+<input type="number" class="form-control contador-sabor mx-2" id="personalizado_${sabor}" value="0" min="0" readonly>
+<button type="button" class="btn btn-outline-success btn-contador" onclick="cambiarCantidadPersonalizado('${sabor}', 1)">
+<i class="bi bi-plus"></i>
+</button>
+</div>
+</div>
+</div>
+`;
+contenedor.appendChild(div);
+});
+}
+
+// Cambiar cantidad personalizada con botones
+function cambiarCantidadPersonalizada(cambio) {
+const input = document.getElementById('cantidadPersonalizada');
+const nuevaCantidad = Math.max(1, Math.min(100, parseInt(input.value) + cambio));
+input.value = nuevaCantidad;
+actualizarPrecioPersonalizado();
+}
+
+// Cambiar cantidad de sabor personalizado
+function cambiarCantidadPersonalizado(sabor, cambio) {
+const nuevaCantidad = Math.max(0, Math.min(50, saboresPersonalizadosSeleccionados[sabor] + cambio));
+saboresPersonalizadosSeleccionados[sabor] = nuevaCantidad;
+document.getElementById(`personalizado_${sabor}`).value = nuevaCantidad;
+actualizarResumenPersonalizado();
+}
+
+// Actualizar precio personalizado
+function actualizarPrecioPersonalizado() {
+const cantidad = parseInt(document.getElementById('cantidadPersonalizada').value) || 1;
+const precio = cantidad * 500;
+document.getElementById('precioPersonalizado').textContent = precio.toLocaleString();
+document.getElementById('resumenCantidad').textContent = cantidad;
+document.getElementById('resumenTotal').textContent = precio.toLocaleString();
+}
+
+// Actualizar resumen personalizado
+function actualizarResumenPersonalizado() {
+const resumenSabores = document.getElementById('resumenSabores');
+const saboresSeleccionados = Object.entries(saboresPersonalizadosSeleccionados)
+.filter(([sabor, cantidad]) => cantidad > 0)
+.map(([sabor, cantidad]) => `<span class="badge bg-info me-1 mb-1">${sabor}: ${cantidad}</span>`)
+.join('');
+
+if (saboresSeleccionados) {
+resumenSabores.innerHTML = `<div class="mb-2"><strong>Sabores:</strong></div>${saboresSeleccionados}`;
+} else {
+resumenSabores.innerHTML = '<p class="text-muted text-center"><i class="bi bi-arrow-up"></i> Selecciona sabores arriba</p>';
+}
+}
+
+// Agregar personalizado al carrito
+function agregarPersonalizado() {
+const cantidad = parseInt(document.getElementById('cantidadPersonalizada').value) || 1;
+const saboresSeleccionados = Object.entries(saboresPersonalizadosSeleccionados)
+.filter(([sabor, cant]) => cant > 0)
+.map(([sabor, cant]) => `${sabor} (${cant})`);
+
+if (saboresSeleccionados.length === 0) {
+showAlert('warning', 'Debes seleccionar al menos un sabor');
+return;
+}
+
+const item = {
+producto: `Sándwich Personalizado x${cantidad}`,
+precio: cantidad * 500,
+cantidad: cantidad,
+sabores: saboresSeleccionados.join(', '),
+id: Date.now(),
+personalizado: true
+};
+
+carrito.push(item);
+actualizarCarrito();
+mostrarCarrito();
+
+// Limpiar selección
+Object.keys(saboresPersonalizadosSeleccionados).forEach(sabor => {
+saboresPersonalizadosSeleccionados[sabor] = 0;
+document.getElementById(`personalizado_${sabor}`).value = 0;
+});
+document.getElementById('cantidadPersonalizada').value = 1;
+actualizarPrecioPersonalizado();
+actualizarResumenPersonalizado();
+
+showAlert('success', 'Sándwich personalizado agregado al carrito');
+}
+
+// Agregar producto al carrito
+function agregarAlPedido(producto, precio, cantidad) {
+if (producto.includes('Premium')) {
+productoTemporal = { producto, precio, cantidad };
+mostrarModalSaboresPremium(producto);
+} else {
+const item = {
+producto: producto,
+precio: precio,
+cantidad: cantidad,
+sabores: '',
+id: Date.now()
+};
+carrito.push(item);
+actualizarCarrito();
+mostrarCarrito();
+showAlert('success', `${producto} agregado al carrito`);
+}
+}
+
+// Mostrar modal de sabores premium
+function mostrarModalSaboresPremium(producto) {
+const cantidadSabores = producto.includes('48') ? 6 : 3;
+document.getElementById('totalSandwichesPremium').textContent = `${cantidadSabores} sabores`;
+document.getElementById('maxSandwiches').textContent = cantidadSabores;
+
+const listaSabores = document.getElementById('listaSaboresPremium');
+listaSabores.innerHTML = '';
+
+const saboresTemporales = {};
+
+saboresPremium.forEach(sabor => {
+saboresTemporales[sabor] = 0;
+
+const div = document.createElement('div');
+div.className = 'col-md-6 mb-3';
+div.innerHTML = `
+<div class="sabor-item">
+<div class="d-flex justify-content-between align-items-center">
+<span><strong><i class="bi bi-star text-warning"></i> ${sabor}</strong></span>
+<div class="d-flex align-items-center">
+<button type="button" class="btn btn-outline-danger btn-contador" onclick="cambiarCantidadPremium('${sabor}', -1)">
+<i class="bi bi-dash"></i>
+</button>
+<input type="number" class="form-control contador-sabor mx-2" id="premium_${sabor}" value="0" min="0" readonly>
+<button type="button" class="btn btn-outline-success btn-contador" onclick="cambiarCantidadPremium('${sabor}', 1)">
+<i class="bi bi-plus"></i>
+</button>
+</div>
+</div>
+</div>
+`;
+listaSabores.appendChild(div);
+});
+
+window.saboresTemporalesPremium = saboresTemporales;
+window.maxSaboresPremium = cantidadSabores;
+document.getElementById('saboresAsignados').textContent = '0';
+actualizarProgressPremium();
+
+new bootstrap.Modal(document.getElementById('modalSaboresPremium')).show();
+}
+
+// Cambiar cantidad de sabor premium
+function cambiarCantidadPremium(sabor, cambio) {
+const maxSabores = window.maxSaboresPremium;
+const totalActual = Object.values(window.saboresTemporalesPremium).reduce((a, b) => a + b, 0);
+
+let nuevaCantidad = window.saboresTemporalesPremium[sabor] + cambio;
+
+if (nuevaCantidad < 0) nuevaCantidad = 0;
+if (cambio > 0 && totalActual >= maxSabores) {
+showAlert('warning', `No puedes agregar más sabores. Máximo ${maxSabores} sabores.`);
+return;
+}
+
+window.saboresTemporalesPremium[sabor] = nuevaCantidad;
+document.getElementById(`premium_${sabor}`).value = nuevaCantidad;
+
+const totalAsignados = Object.values(window.saboresTemporalesPremium).reduce((a, b) => a + b, 0);
+document.getElementById('saboresAsignados').textContent = totalAsignados;
+actualizarProgressPremium();
+}
+
+// Actualizar barra de progreso premium
+function actualizarProgressPremium() {
+const totalAsignados = Object.values(window.saboresTemporalesPremium || {}).reduce((a, b) => a + b, 0);
+const maxSabores = window.maxSaboresPremium || 1;
+const porcentaje = (totalAsignados / maxSabores) * 100;
+
+const progressBar = document.getElementById('progressSabores');
+progressBar.style.width = `${porcentaje}%`;
+progressBar.classList.toggle('bg-success', porcentaje === 100);
+progressBar.classList.toggle('bg-warning', porcentaje > 0 && porcentaje < 100);
+}
+
+// Confirmar sabores premium
+function confirmarSaboresPremium() {
+const maxSabores = window.maxSaboresPremium;
+const totalAsignados = Object.values(window.saboresTemporalesPremium).reduce((a, b) => a + b, 0);
+
+if (totalAsignados !== maxSabores) {
+showAlert('warning', `Debes seleccionar exactamente ${maxSabores} sabores. Actualmente tienes ${totalAsignados}.`);
+return;
+}
+
+const listaSabores = [];
+Object.entries(window.saboresTemporalesPremium).forEach(([sabor, cantidad]) => {
+for (let i = 0; i < cantidad; i++) {
+listaSabores.push(sabor);
+}
+});
+
+const item = {
+producto: productoTemporal.producto,
+precio: productoTemporal.precio,
+cantidad: productoTemporal.cantidad,
+sabores: listaSabores.join(', '),
+id: Date.now()
+};
+
+carrito.push(item);
+actualizarCarrito();
+mostrarCarrito();
+bootstrap.Modal.getInstance(document.getElementById('modalSaboresPremium')).hide();
+
+showAlert('success', `${productoTemporal.producto} con sabores premium agregado al carrito`);
+
+productoTemporal = null;
+window.saboresTemporalesPremium = null;
+window.maxSaboresPremium = null;
+}
+
+// Actualizar precios según forma de pago
+function actualizarPreciosPago() {
+const formaPago = document.querySelector('input[name="pago"]:checked')?.value;
+if (!formaPago) return;
+
+carrito.forEach(item => {
+if (precios[item.producto]) {
+item.precio = precios[item.producto][formaPago.toLowerCase()];
+}
+});
+
+actualizarCarrito();
+}
+
+// Mostrar carrito
+function mostrarCarrito() {
+document.getElementById('carritoResumen').style.display = 'block';
+document.getElementById('carritoResumen').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Actualizar visualización del carrito
+function actualizarCarrito() {
+const contenedor = document.getElementById('itemsCarrito');
+const total = carrito.reduce((sum, item) => sum + item.precio, 0);
+const totalItems = carrito.length;
+
+// Actualizar contador
+document.getElementById('contadorItems').textContent = totalItems;
+
+contenedor.innerHTML = '';
+carrito.forEach((item, index) => {
+const div = document.createElement('div');
+div.className = 'border-bottom pb-2 mb-2';
+
+let detallesProducto = '';
+if (item.personalizado) {
+detallesProducto = `<small class="text-muted">${item.cantidad} sándwiches</small>`;
+} else if (item.porPlanchas) {
+detallesProducto = `<small class="text-muted">${item.planchas} plancha${item.planchas > 1 ? 's' : ''} - ${item.cantidad} sándwiches</small>`;
+} else {
+detallesProducto = `<small class="text-muted">${item.cantidad} sándwiches - ${(item.cantidad/24).toFixed(2)} planchas</small>`;
+}
+
+div.innerHTML = `
+<div class="d-flex justify-content-between align-items-start">
+<div class="flex-grow-1">
+<strong>${item.producto}</strong>
+<br>${detallesProducto}
+${item.sabores ? `<br><small class="text-success"><i class="bi bi-star"></i> ${item.sabores}</small>` : ''}
+</div>
+<div class="text-end ms-2">
+<div class="fw-bold text-success">${item.precio.toLocaleString()}</div>
+<button class="btn btn-sm btn-outline-danger" onclick="eliminarDelCarrito(${index})" title="Eliminar">
+<i class="bi bi-trash"></i>
+</button>
+</div>
+</div>
+`;
+contenedor.appendChild(div);
+});
+
+document.getElementById('totalCarrito').textContent = total.toLocaleString();
+document.getElementById('totalPedido').textContent = total.toLocaleString();
+document.getElementById('cantidadProductosPedido').textContent = `${totalItems} producto${totalItems !== 1 ? 's' : ''}`;
+
+// Actualizar resumen en pestaña de pedido
+actualizarResumenPedido();
+}
+
+// Actualizar resumen en pestaña de pedido
+function actualizarResumenPedido() {
+const resumen = document.getElementById('resumenPedido');
+
+if (carrito.length === 0) {
+resumen.innerHTML = `
+<div class="text-center text-muted">
+<i class="bi bi-cart-x" style="font-size: 3rem;"></i>
+<p class="mt-2">Selecciona productos del menú para agregarlos aquí</p>
+</div>
+`;
+return;
+}
+
+resumen.innerHTML = '';
+carrito.forEach(item => {
+const div = document.createElement('div');
+div.className = 'border-bottom pb-2 mb-2';
+div.innerHTML = `
+<div class="d-flex justify-content-between">
+<div>
+<strong>${item.producto}</strong>
+${item.sabores ? `<br><small class="text-success">${item.sabores}</small>` : ''}
+</div>
+<div class="text-end fw-bold">${item.precio.toLocaleString()}</div>
+</div>
+`;
+resumen.appendChild(div);
+});
+}
+
+// Eliminar del carrito
+function eliminarDelCarrito(index) {
+if (confirm('¿Eliminar este producto del carrito?')) {
+carrito.splice(index, 1);
+actualizarCarrito();
+if (carrito.length === 0) {
+document.getElementById('carritoResumen').style.display = 'none';
+}
+showAlert('info', 'Producto eliminado del carrito');
+}
+}
+
+// Limpiar carrito
+function limpiarCarrito() {
+if (confirm('¿Limpiar todo el carrito?')) {
+carrito = [];
+document.getElementById('carritoResumen').style.display = 'none';
+actualizarCarrito();
+showAlert('info', 'Carrito limpiado');
+}
+}
+
+// Pasar a la pestaña de pedido
+function pasarAPedido() {
+document.getElementById('pedido-tab').click();
+
+// Auto-llenar efectivo si no hay selección
+const pagoEfectivo = document.getElementById('efectivo');
+if (!document.querySelector('input[name="pago"]:checked')) {
+pagoEfectivo.checked = true;
+actualizarPreciosPago();
+}
+
+showAlert('info', 'Completa los datos del pedido para continuar');
+}
+
+// Enviar pedido
+document.getElementById('pedidoForm').addEventListener('submit', function(event) {
+event.preventDefault();
+
+if (carrito.length === 0) {
+showAlert('warning', 'Debe agregar al menos un producto al pedido');
+return;
+}
+
+showLoading();
+
+const datos = new FormData(this);
+datos.append('productos', JSON.stringify(carrito));
+datos.append('total', carrito.reduce((sum, item) => sum + item.precio, 0));
+datos.append('cantidad', carrito.reduce((sum, item) => sum + item.cantidad, 0));
+datos.append('planchas', carrito.reduce((sum, item) => {
+if (item.porPlanchas) {
+return sum + item.planchas;
+} else if (item.personalizado) {
+return sum + (item.cantidad / 8);
+} else {
+return sum + (item.cantidad / 24);
+}
+}, 0).toFixed(2));
+
+fetch('guardar_pedido.php', {
+method: 'POST',
+body: datos
+})
+.then(response => response.json())
+.then(data => {
+hideLoading();
+if (data.success) {
+showAlert('success', data.message);
+
+// Limpiar formulario y carrito
+this.reset();
+limpiarCarrito();
+
+// Opcional: redirigir a ver pedidos
+setTimeout(() => {
+if (confirm('¿Desea ver el pedido creado?')) {
+window.open('ver_pedidos.php', '_blank');
+}
+}, 2000);
+} else {
+showAlert('danger', data.message);
+}
+})
+.catch(error => {
+hideLoading();
+console.error('Error:', error);
+showAlert('danger', 'Error de conexión al guardar el pedido');
+});
+});
+
+// Función para mostrar alertas
+function showAlert(type, message) {
+const alertDiv = document.createElement('div');
+alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 350px; box-shadow: 0 4px 12px rgba(0,0,0,0.2);';
+
+const iconClass = {
+'success': 'check-circle-fill',
+'danger': 'exclamation-triangle-fill',
+'warning': 'exclamation-triangle-fill',
+'info': 'info-circle-fill'
+}[type] || 'info-circle-fill';
+
+alertDiv.innerHTML = `
+<div class="d-flex align-items-center">
+<i class="bi bi-${iconClass} me-2"></i>
+<div class="flex-grow-1">${message}</div>
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+`;
+
+document.body.appendChild(alertDiv);
+
+setTimeout(() => {
+if (alertDiv.parentNode) {
+alertDiv.remove();
+}
+}, 5000);
+}
+
+// Validación en tiempo real del formulario
+document.addEventListener('DOMContentLoaded', function() {
+inicializarSaboresPersonalizados();
+inicializarSaboresPorPlanchas();
+actualizarPrecioPersonalizado();
+
+const form = document.getElementById('pedidoForm');
+const inputs = form.querySelectorAll('input, select, textarea');
+
+inputs.forEach(input => {
+input.addEventListener('blur', function() {
+validateField(this);
+});
+
+// Validación en tiempo real para teléfono
+if (input.name === 'contacto') {
+input.addEventListener('input', function() {
+// Permitir solo números, espacios, guiones y paréntesis
+this.value = this.value.replace(/[^\d\s\-\+\(\)]/g, '');
+});
+}
+});
+
+function validateField(field) {
+field.classList.remove('is-invalid', 'is-valid');
+
+if (field.hasAttribute('required') && !field.value.trim()) {
+field.classList.add('is-invalid');
+return false;
+}
+
+if (field.name === 'contacto' && field.value) {
+const phonePattern = /^[\d\s\-\+\(\)]{8,}$/;
+if (!phonePattern.test(field.value)) {
+field.classList.add('is-invalid');
+return false;
+}
+}
+
+if (field.name === 'nombre' || field.name === 'apellido') {
+if (field.value && field.value.length < 2) {
+field.classList.add('is-invalid');
+return false;
+}
+}
+
+if (field.value.trim()) {
+field.classList.add('is-valid');
+}
+return true;
+}
+
+// Auto-completar modalidad según dirección
+const direccionInput = form.querySelector('input[name="direccion"]');
+const modalidadRetira = form.querySelector('#retiro');
+const modalidadEnvio = form.querySelector('#envio');
+
+direccionInput.addEventListener('input', function() {
+if (this.value.trim() && !modalidadRetira.checked && !modalidadEnvio.checked) {
+modalidadEnvio.checked = true;
+}
+});
+
+// Efectos visuales en cards del menú
+const menuCards = document.querySelectorAll('.menu-card');
+menuCards.forEach(card => {
+card.addEventListener('mouseenter', function() {
+this.style.borderColor = '#28a745';
+});
+
+card.addEventListener('mouseleave', function() {
+this.style.borderColor = 'transparent';
+});
+});
+
+// Atajos de teclado
+document.addEventListener('keydown', function(e) {
+// Ctrl + 1-6 para cambiar pestañas
+if (e.ctrlKey && e.key >= '1' && e.key <= '6') {
+e.preventDefault();
+const tabs = ['menu-tab', 'personalizados-tab', 'planchas-tab', 'pedido-tab'];
+const tabIndex = parseInt(e.key) - 1;
+if (tabs[tabIndex]) {
+document.getElementById(tabs[tabIndex]).click();
+}
+}
+
+// Escape para cerrar modales
+if (e.key === 'Escape') {
+const modals = document.querySelectorAll('.modal.show');
+modals.forEach(modal => {
+const modalInstance = bootstrap.Modal.getInstance(modal);
+if (modalInstance) {
+modalInstance.hide();
+}
+});
+}
+});
+
+// Mostrar tips de ayuda
+setTimeout(() => {
+if (carrito.length === 0 && !localStorage.getItem('tips_shown')) {
+showAlert('info', 'Tip: Haz clic en los productos del menú para agregarlos al carrito');
+localStorage.setItem('tips_shown', 'true');
+}
+}, 3000);
+
+// Auto-scroll suave en navegación
+document.querySelectorAll('.nav-link[data-bs-toggle="tab"]').forEach(tab => {
+tab.addEventListener('shown.bs.tab', function() {
+setTimeout(() => {
+this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}, 100);
+});
+});
+});
+
+// PWA - Service Worker
+if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+window.addEventListener('load', function() {
+navigator.serviceWorker.register('/sw.js')
+.then(function(registration) {
+console.log('Service Worker registrado correctamente');
+})
+.catch(function(error) {
+console.log('Error al registrar Service Worker:', error);
+});
+});
+}
+
+// Detectar instalación PWA
+window.addEventListener('beforeinstallprompt', (e) => {
+e.preventDefault();
+window.deferredPrompt = e;
+});
+
+// Funciones de utilidad
+function formatearPrecio(precio) {
+return new Intl.NumberFormat('es-AR', {
+style: 'currency',
+currency: 'ARS',
+minimumFractionDigits: 0
+}).format(precio);
+}
+
+function copiarAlPortapapeles(texto) {
+navigator.clipboard.writeText(texto).then(() => {
+showAlert('success', 'Copiado al portapapeles');
+}).catch(() => {
+showAlert('warning', 'No se pudo copiar');
+});
+}
+
+// Animaciones y efectos
+function animateValue(element, start, end, duration) {
+let startTimestamp = null;
+const step = (timestamp) => {
+if (!startTimestamp) startTimestamp = timestamp;
+const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+const value = Math.floor(progress * (end - start) + start);
+element.textContent = value.toLocaleString();
+if (progress < 1) {
+window.requestAnimationFrame(step);
+}
+};
+window.requestAnimationFrame(step);
+}
+
+// Funciones de accesibilidad
+function anunciarCambio(mensaje) {
+const anuncio = document.createElement('div');
+anuncio.setAttribute('aria-live', 'polite');
+anuncio.setAttribute('aria-atomic', 'true');
+anuncio.className = 'sr-only';
+anuncio.textContent = mensaje;
+document.body.appendChild(anuncio);
+
+setTimeout(() => {
+document.body.removeChild(anuncio);
+}, 1000);
+}
+
+// Debug helpers (solo en desarrollo)
+if (window.location.hostname === 'localhost') {
+window.debugCarrito = () => console.log(carrito);
+window.limpiarLocalStorage = () => {
+localStorage.clear();
+showAlert('info', 'LocalStorage limpiado');
+};
+}
+
+// Performance monitoring
+if (window.performance) {
+window.addEventListener('load', function() {
+setTimeout(() => {
+const perfData = performance.timing;
+const loadTime = perfData.loadEventEnd - perfData.navigationStart;
+console.log(`Tiempo de carga: ${loadTime}ms`);
+}, 0);
+});
+}
+
+// Iniciación final
+console.log(`%c<?= APP_NAME ?>`, 'color: #28a745; font-size: 20px; font-weight: bold;');
+console.log('Sistema de pedidos iniciado correctamente ✅');
+</script>
+
+</body>
+</html>
+
+<?php
+// Cerrar conexión si existe
+if (isset($conexion)) {
+$conexion->close();
+}
+
+// Log de acceso (opcional, para estadísticas)
+try {
+if (isset($_SERVER['HTTP_USER_AGENT']) && !strpos($_SERVER['HTTP_USER_AGENT'], 'bot')) {
+$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+$user_agent = substr($_SERVER['HTTP_USER_AGENT'] ?? '', 0, 255);
+
+// Solo log si no es un bot y no es localhost en desarrollo
+if ($ip !== '127.0.0.1' && $ip !== '::1') {
+$log_conexion = getConnection();
+$stmt = $log_conexion->prepare("INSERT INTO logs_actividad (accion, detalles, usuario_ip) VALUES ('VISIT_INDEX', ?, ?)");
+$stmt->bind_param("ss", $user_agent, $ip);
+$stmt->execute();
+$stmt->close();
+$log_conexion->close();
+}
+}
+} catch (Exception $e) {
+// Log silencioso, no afectar la experiencia del usuario
+error_log("Error en log de visita: " . $e->getMessage());
+}
+?><?php
+require_once '/var/www/html/sangucheria/config.php';
+
+try {
+$conexion = getConnection();
+$csrf_token = generateCSRFToken();
+
+// Obtener estadísticas básicas
+$stats_query = "SELECT 
+COUNT(*) as total_pedidos,
+COUNT(CASE WHEN DATE(fecha) = CURDATE() THEN 1 END) as pedidos_hoy,
+COUNT(CASE WHEN estado = 'Pendiente' THEN 1 END) as pendientes
+FROM pedidos";
+
+$estadisticas = $conexion->query($stats_query)->fetch_assoc();
+
+} catch (Exception $e) {
+error_log("Error en index.php: " . $e->getMessage());
+$estadisticas = ['total_pedidos' => 0, 'pedidos_hoy' => 0, 'pendientes' => 0];
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pedidos - Fabrica de Sándwiches</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title><?= APP_NAME ?> - Sistema de Pedidos</title>
+
+<!-- Meta tags PWA -->
+<meta name="theme-color" content="#28a745">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="<?= APP_NAME ?>">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="manifest" href="/manifest.json">
+
+<!-- CSS -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<style>
+.menu-card {
+transition: all 0.3s ease;
+cursor: pointer;
+border: 2px solid transparent;
+}
+.menu-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+border-color: #28a745;
+}
+.precio-original {
+text-decoration: line-through;
+color: #6c757d;
+font-size: 0.9em;
+}
+.precio-efectivo {
+color: #28a745;
+font-weight: bold;
+font-size: 1.1em;
+}
+.badge-descuento {
+background: linear-gradient(45deg, #dc3545, #fd7e14);
+font-size: 0.75em;
+animation: pulse 2s infinite;
+}
+@keyframes pulse {
+0% { transform: scale(1); }
+50% { transform: scale(1.05); }
+100% { transform: scale(1); }
+}
+.nav-tabs .nav-link.active {
+background: linear-gradient(45deg, #28a745, #20c997);
+border-color: #28a745;
+color: white;
+font-weight: bold;
+}
+.nav-tabs .nav-link {
+color: #495057;
+border-radius: 10px 10px 0 0;
+margin-right: 5px;
+}
+.nav-tabs .nav-link:hover {
+border-color: #28a745;
+color: #28a745;
+}
+.ingredientes {
+font-size: 0.85em;
+color: #6c757d;
+line-height: 1.3;
+}
+.contador-sabor {
+width: 60px;
+text-align: center;
+}
+.btn-contador {
+width: 35px;
+height: 35px;
+padding: 0;
+font-size: 16px;
+line-height: 1;
+border-radius: 50%;
+}
+.sabor-item {
+border: 1px solid #dee2e6;
+border-radius: 12px;
+padding: 15px;
+margin-bottom: 10px;
+background: linear-gradient(145deg, #ffffff, #f8f9fa);
+box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+transition: all 0.2s;
+}
+.sabor-item:hover {
+box-shadow: 4px 4px 10px rgba(0,0,0,0.15);
+transform: translateY(-1px);
+}
+.personalizados-card {
+background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+color: white;
+border-radius: 15px;
+}
+.planchas-card {
+background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%);
+color: white;
+border-radius: 15px;
+}
+.cantidad-input {
+width: 100px;
+}
+.stats-mini {
+background: linear-gradient(45deg, #007bff, #0056b3);
+color: white;
+border-radius: 10px;
+padding: 10px;
+margin-bottom: 20px;
+}
+.loading-spinner {
+display: none;
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+z-index: 9999;
+}
+.footer-info {
+background: #343a40;
+color: white;
+padding: 20px 0;
+margin-top: 50px;
+}
+</style>
 </head>
-<body>
-    <div class="container mt-5">
-        <h1>Pedidos - Fábrica de Sándwiches</h1>
-        
-        <!-- Formulario para agregar un nuevo pedido -->
-        <form method="POST" action="guardar_pedido.php">
-            <!-- Aquí iría tu formulario de entrada para agregar pedidos -->
-        </form>
+<body class="bg-light">
 
-        <!-- Filtro de búsqueda dinámica -->
-        <div class="my-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Buscar por nombre o apellido..." onkeyup="filterTable()">
-        </div>
+<!-- Loading Spinner -->
+<div class="loading-spinner" id="loadingSpinner">
+<div class="spinner-border text-success" role="status" style="width: 3rem; height: 3rem;">
+<span class="visually-hidden">Cargando...</span>
+</div>
+</div>
 
-        <!-- Tabla de pedidos -->
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Fecha</th>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>Cantidad</th>
-                    <th>Planchas</th>
-                    <th>Contacto</th>
-                    <th>Dirección</th>
-                    <th>Modalidad</th>
-                    <th>Observaciones</th>
-                </tr>
-            </thead>
-            <tbody id="pedidosTable">
-                <?php
-                $conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
-                if ($conexion->connect_error) {
-                    die("Error de conexión: " . $conexion->connect_error);
-                }
+<div class="container-fluid mt-3">
+<!-- Header -->
+<div class="text-center mb-4">
+<h1 class="text-success mb-2">
+<i class="bi bi-shop"></i> <?= APP_NAME ?>
+</h1>
+<p class="text-muted mb-1">
+<i class="bi bi-telephone-fill"></i> <?= APP_PHONE ?>
+</p>
 
-                $highlightId = isset($_GET['highlight']) ? $_GET['highlight'] : null;
+<!-- Mini estadísticas -->
+<div class="stats-mini d-inline-block">
+<small>
+<i class="bi bi-clipboard-data"></i> <?= $estadisticas['total_pedidos'] ?> pedidos totales | 
+<i class="bi bi-calendar-day"></i> <?= $estadisticas['pedidos_hoy'] ?> hoy | 
+<i class="bi bi-hourglass-split"></i> <?= $estadisticas['pendientes'] ?> pendientes
+</small>
+</div>
+</div>
 
-                $sql = "SELECT * FROM pedidos ORDER BY fecha DESC";
-                $result = $conexion->query($sql);
+<!-- Mensajes -->
+<?php if (isset($_SESSION['mensaje'])): ?>
+<div class="alert alert-success alert-dismissible fade show">
+<i class="bi bi-check-circle"></i> <?= htmlspecialchars($_SESSION['mensaje']) ?>
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php unset($_SESSION['mensaje']); ?>
+<?php endif; ?>
 
-                if ($result->num_rows > 0) {
-                    while($row = $result->fetch_assoc()) {
-                        $resaltar = ($highlightId == $row['id']) ? ' style="background-color: #d4edda;"' : '';
-                        echo "<tr$resaltar>
-                                <td>" . $row['fecha'] . "</td>
-                                <td>" . $row['nombre'] . "</td>
-                                <td>" . $row['apellido'] . "</td>
-                                <td>" . $row['cantidad'] . "</td>
-                                <td>" . $row['planchas'] . "</td>
-                                <td>" . $row['contacto'] . "</td>
-                                <td>" . $row['direccion'] . "</td>
-                                <td>" . $row['modalidad'] . "</td>
-                                <td>" . $row['observaciones'] . "</td>
-                              </tr>";
-                    }
-                } else {
-                    echo "<tr><td colspan='9'>No hay pedidos registrados.</td></tr>";
-                }
+<?php if (isset($_SESSION['error'])): ?>
+<div class="alert alert-danger alert-dismissible fade show">
+<i class="bi bi-exclamation-triangle"></i> <?= htmlspecialchars($_SESSION['error']) ?>
+<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+</div>
+<?php unset($_SESSION['error']); ?>
+<?php endif; ?>
 
-                $conexion->close();
-                ?>
-            </tbody>
-        </table>
+<!-- Navegación por pestañas -->
+<ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
+<li class="nav-item" role="presentation">
+<button class="nav-link active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" role="tab">
+<i class="bi bi-list-ul"></i> Menú
+</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" id="personalizados-tab" data-bs-toggle="tab" data-bs-target="#personalizados" role="tab">
+<i class="bi bi-palette"></i> Personalizados
+</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" id="planchas-tab" data-bs-toggle="tab" data-bs-target="#planchas" role="tab">
+<i class="bi bi-stack"></i> Por Planchas
+</button>
+</li>
+<li class="nav-item" role="presentation">
+<button class="nav-link" id="pedido-tab" data-bs-toggle="tab" data-bs-target="#pedido" role="tab">
+<i class="bi bi-cart-plus"></i> Nuevo Pedido
+</button>
+</li>
+<li class="nav-item" role="presentation">
+<a class="nav-link" href="clientes_fijos.php">
+<i class="bi bi-people-fill"></i> Clientes Fijos
+</a>
+</li>
+<li class="nav-item" role="presentation">
+<a class="nav-link" href="ver_pedidos.php">
+<i class="bi bi-bar-chart-line"></i> Ver Pedidos
+</a>
+</li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+
+<!-- PESTAÑA MENÚ -->
+<div class="tab-pane fade show active" id="menu" role="tabpanel">
+<div class="row">
+<div class="col-12">
+<div class="text-center mb-4">
+<h3 class="text-success">
+<i class="bi bi-award"></i> Promo de Triples
+</h3>
+<p class="text-muted">Los mejores sándwiches de la zona con precios especiales</p>
+</div>
+
+<!-- Paquetes x48 -->
+<div class="mb-5">
+<h4 class="text-primary mb-3 text-center">
+<i class="bi bi-box-seam"></i> Paquetes x48 Sándwiches
+</h4>
+<div class="row">
+<div class="col-lg-3 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('48 Jamón y Queso', 22000, 48)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-box text-warning" style="font-size: 2rem;"></i>
     </div>
+    <h5 class="card-title">48 Jamón y Queso</h5>
+    <div class="precio-original">$24.000</div>
+    <div class="precio-efectivo">$22.000</div>
+    <span class="badge badge-descuento">-$2.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-check-circle text-success"></i> Jamón y queso clásico
+    </p>
+</div>
+</div>
+</div>
+<div class="col-lg-3 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('48 Surtidos Clásicos', 20000, 48)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-collection text-info" style="font-size: 2rem;"></i>
+    </div>
+    <h5 class="card-title">48 Surtidos Clásicos</h5>
+    <div class="precio-original">$22.000</div>
+    <div class="precio-efectivo">$20.000</div>
+    <span class="badge badge-descuento">-$2.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-check-circle text-success"></i> Jamón y queso, lechuga, tomate, huevo
+    </p>
+</div>
+</div>
+</div>
+<div class="col-lg-3 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('48 Surtidos Especiales', 22000, 48)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-star text-success" style="font-size: 2rem;"></i>
+    </div>
+    <h5 class="card-title">48 Surtidos Especiales</h5>
+    <div class="precio-original">$24.000</div>
+    <div class="precio-efectivo">$22.000</div>
+    <span class="badge badge-descuento">-$2.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-check-circle text-success"></i> Jamón y queso, lechuga, tomate, huevo, choclo, aceitunas
+    </p>
+</div>
+</div>
+</div>
+<div class="col-lg-3 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('48 Surtidos Premium', 42000, 48)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-gem text-danger" style="font-size: 2rem;"></i>
+    </div>
+    <h5 class="card-title">48 Surtidos Premium</h5>
+    <div class="precio-original">$44.000</div>
+    <div class="precio-efectivo">$42.000</div>
+    <span class="badge badge-descuento">-$2.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-star-fill text-warning"></i> Con sumadores de sabores premium
+    </p>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-    <!-- Script para el filtro dinámico -->
-    <script>
-        function filterTable() {
-            var input = document.getElementById("searchInput");
-            var filter = input.value.toLowerCase();
-            var table = document.getElementById("pedidosTable");
-            var rows = table.getElementsByTagName("tr");
+<!-- Paquetes x24 -->
+<div class="mb-5">
+<h4 class="text-primary mb-3 text-center">
+<i class="bi bi-box"></i> Paquetes x24 Sándwiches
+</h4>
+<div class="row">
+<div class="col-lg-4 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('24 Jamón y Queso', 11000, 24)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-box text-warning" style="font-size: 2rem;"></i>
+    </div>
+    <h5 class="card-title">24 Jamón y Queso</h5>
+    <div class="precio-original">$12.000</div>
+    <div class="precio-efectivo">$11.000</div>
+    <span class="badge badge-descuento">-$1.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-check-circle text-success"></i> Jamón y queso clásico
+    </p>
+</div>
+</div>
+</div>
+<div class="col-lg-4 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('24 Surtidos', 11000, 24)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-collection text-info" style="font-size: 2rem;"></i>
+    </div>
+    <h5 class="card-title">24 Surtidos</h5>
+    <div class="precio-original">$12.000</div>
+    <div class="precio-efectivo">$11.000</div>
+    <span class="badge badge-descuento">-$1.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-check-circle text-success"></i> Jamón y queso, lechuga, tomate, huevo, choclo, aceitunas
+    </p>
+</div>
+</div>
+</div>
+<div class="col-lg-4 col-md-6 mb-4">
+<div class="card menu-card h-100" onclick="agregarAlPedido('24 Surtidos Premium', 21000, 24)">
+<div class="card-body text-center">
+    <div class="mb-3">
+        <i class="bi bi-gem text-danger" style="font-size: 2rem;"></i>
+    </div>
+    <h5 class="card-title">24 Surtidos Premium</h5>
+    <div class="precio-original">$22.000</div>
+    <div class="precio-efectivo">$21.000</div>
+    <span class="badge badge-descuento">-$1.000 efectivo</span>
+    <p class="ingredientes mt-3">
+        <i class="bi bi-star-fill text-warning"></i> Con sumadores de sabores premium
+    </p>
+</div>
+</div>
+</div>
+</div>
+</div>
 
-            for (var i = 0; i < rows.length; i++) {
-                var cells = rows[i].getElementsByTagName("td");
-                var match = false;
-                for (var j = 0; j < cells.length; j++) {
-                    if (cells[j].innerHTML.toLowerCase().indexOf(filter) > -1) {
-                        match = true;
-                        break;
-                    }
-                }
-                rows[i].style.display = match ? "" : "none";
-            }
-        }
-    </script>
-</body>
-</html>
+<!-- Ingredientes Premium -->
+<div class="card bg-gradient mb-4" style="background: linear-gradient(135deg, #17a2b8, #138496);">
+<div class="card-body text-white text-center">
+<h5 class="mb-3">
+<i class="bi bi-star-fill"></i> Ingredientes Premium Disponibles
+</h5>
+<div class="row">
+<div class="col-md-6">
+<p class="mb-2"><i class="bi bi-check2"></i> Ananá • Atún • Berenjena • Durazno • Jamón Crudo</p>
+</div>
+<div class="col-md-6">
+<p class="mb-0"><i class="bi bi-check2"></i> Morrón • Palmito • Panceta • Pollo • Roquefort • Salame</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Carrito de compras -->
+<div id="carritoResumen" class="card border-success shadow-lg" style="display: none;">
+<div class="card-header bg-success text-white">
+<h5 class="mb-0">
+<i class="bi bi-cart-fill"></i> Carrito de Compras
+<span class="badge bg-light text-success ms-2" id="contadorItems">0</span>
+</h5>
+</div>
+<div class="card-body">
+<div id="itemsCarrito"></div>
+<hr>
+<div class="d-flex justify-content-between align-items-center">
+<div>
+<strong class="h5">Total: $<span id="totalCarrito">0</span></strong>
+</div>
+<div>
+<button class="btn btn-outline-warning btn-sm me-2" onclick="limpiarCarrito()">
+    <i class="bi bi-trash"></i> Limpiar
+</button>
+<button class="btn btn-success" onclick="pasarAPedido()">
+    <i class="bi bi-arrow-right-circle"></i> Continuar Pedido
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PESTAÑA SÁNDWICHES POR PLANCHAS -->
+<div class="tab-pane fade" id="planchas" role="tabpanel">
+<div class="row">
+<div class="col-12">
+<div class="card planchas-card mb-4">
+<div class="card-body text-center">
+<h3><i class="bi bi-stack"></i> Pedido por Planchas</h3>
+<p class="mb-0 h5">1 Plancha = 8 Sándwiches = 1 Sabor | Precio por plancha: $4.000</p>
+</div>
+</div>
+
+<div class="row">
+<div class="col-lg-8">
+<div class="card shadow">
+<div class="card-header bg-warning text-dark">
+<h5 class="mb-0">
+    <i class="bi bi-gear-fill"></i> Configurar Pedido por Planchas
+</h5>
+</div>
+<div class="card-body">
+<div class="mb-4">
+    <label class="form-label h6">Cantidad de planchas:</label>
+    <div class="d-flex align-items-center justify-content-center">
+        <button type="button" class="btn btn-outline-danger btn-lg me-3" onclick="cambiarCantidadPlanchas(-1)">
+            <i class="bi bi-dash-lg"></i>
+        </button>
+        <div class="text-center">
+            <input type="number" id="cantidadPlanchas" class="form-control form-control-lg text-center fw-bold" 
+                   style="width: 120px; font-size: 1.5rem;" min="1" value="1" readonly>
+            <small class="text-muted mt-1 d-block">= <span id="totalSandwichesPlanchas">8</span> sándwiches</small>
+        </div>
+        <button type="button" class="btn btn-outline-success btn-lg ms-3" onclick="cambiarCantidadPlanchas(1)">
+            <i class="bi bi-plus-lg"></i>
+        </button>
+    </div>
+</div>
+
+<div class="alert alert-info text-center">
+    <h6><i class="bi bi-info-circle"></i> Sabores a seleccionar: <span id="saboresASeleccionar" class="fw-bold">1</span></h6>
+    <small>Cada plancha necesita 1 sabor. Puedes repetir el mismo sabor en varias planchas.</small>
+</div>
+
+<h6 class="mb-3">Seleccionar Sabores por Plancha:</h6>
+<div class="row" id="saboresPorPlanchas">
+    <!-- Sabores se cargan aquí -->
+</div>
+
+<div class="text-center mt-4">
+    <button class="btn btn-warning btn-lg shadow" onclick="agregarPedidoPlanchas()">
+        <i class="bi bi-cart-plus"></i> Agregar al Carrito - $<span id="precioPorPlanchas">4000</span>
+    </button>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-lg-4">
+<div class="card border-warning shadow">
+<div class="card-header bg-warning text-dark">
+<h5 class="mb-0">
+    <i class="bi bi-clipboard-check"></i> Resumen del Pedido
+</h5>
+</div>
+<div class="card-body">
+<div id="resumenPlanchas">
+    <div class="mb-3">
+        <div class="d-flex justify-content-between">
+            <span>Planchas:</span>
+            <span class="fw-bold" id="resumenCantidadPlanchas">1</span>
+        </div>
+        <div class="d-flex justify-content-between">
+            <span>Sándwiches:</span>
+            <span class="fw-bold" id="resumenTotalSandwiches">8</span>
+        </div>
+        <div class="d-flex justify-content-between">
+            <span>Precio por plancha:</span>
+            <span class="fw-bold">$4.000</span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between">
+            <span class="h6">Total:</span>
+            <span class="h6 text-warning">$<span id="resumenTotalPlanchas">4000</span></span>
+        </div>
+    </div>
+    <div id="resumenSaboresPlanchas">
+        <p class="text-muted text-center">
+            <i class="bi bi-arrow-up"></i> Selecciona sabores arriba
+        </p>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- PESTAÑA PERSONALIZADOS -->
+<div class="tab-pane fade" id="personalizados" role="tabpanel">
+<div class="row">
+<div class="col-12">
+<div class="card personalizados-card mb-4">
+<div class="card-body text-center">
+<h3><i class="bi bi-palette"></i> Crear Sándwich Personalizado</h3>
+<p class="mb-0 h5">Selecciona los sabores que quieras, sin límites. Precio por unidad: $500</p>
+</div>
+</div>
+
+<div class="row">
+<div class="col-lg-8">
+<div class="card shadow">
+<div class="card-header bg-primary text-white">
+<h5 class="mb-0">
+    <i class="bi bi-magic"></i> Configurar Sándwich
+</h5>
+</div>
+<div class="card-body">
+<div class="mb-4 text-center">
+    <label class="form-label h6">Cantidad de sándwiches:</label>
+    <div class="d-flex align-items-center justify-content-center">
+        <button type="button" class="btn btn-outline-danger me-3" onclick="cambiarCantidadPersonalizada(-1)">
+            <i class="bi bi-dash"></i>
+        </button>
+        <input type="number" id="cantidadPersonalizada" class="form-control text-center fw-bold cantidad-input" 
+               min="1" max="100" value="1" onchange="actualizarPrecioPersonalizado()">
+        <button type="button" class="btn btn-outline-success ms-3" onclick="cambiarCantidadPersonalizada(1)">
+            <i class="bi bi-plus"></i>
+        </button>
+    </div>
+</div>
+
+<h6 class="mb-3">Seleccionar Sabores:</h6>
+<div class="row" id="saboresPersonalizados">
+    <!-- Sabores se cargan aquí -->
+</div>
