@@ -1,8 +1,7 @@
 <?php
-$conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
-}
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
+?>
 
 // Configurar headers para descarga de Excel
 header('Content-Type: application/vnd.ms-excel; charset=utf-8');
@@ -61,4 +60,5 @@ while ($pedido = $resultado->fetch_assoc()) {
 }
 
 $conexion->close();
+
 ?>

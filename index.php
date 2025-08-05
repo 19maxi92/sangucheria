@@ -1,3 +1,8 @@
+<?php
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -36,6 +41,31 @@
             font-size: 0.85em;
             color: #6c757d;
         }
+        .contador-sabor {
+            width: 60px;
+            text-align: center;
+        }
+        .btn-contador {
+            width: 30px;
+            height: 30px;
+            padding: 0;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .sabor-item {
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
+        }
+        .personalizados-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .cantidad-input {
+            width: 80px;
+        }
     </style>
 </head>
 <body class="bg-light">
@@ -51,6 +81,12 @@
     <ul class="nav nav-tabs mb-4" id="myTab" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" role="tab">📋 Menú</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="personalizados-tab" data-bs-toggle="tab" data-bs-target="#personalizados" role="tab">🎨 Personalizados</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="planchas-tab" data-bs-toggle="tab" data-bs-target="#planchas" role="tab">🍞 Por Planchas</button>
         </li>
         <li class="nav-item" role="presentation">
             <button class="nav-link" id="pedido-tab" data-bs-toggle="tab" data-bs-target="#pedido" role="tab">🛒 Nuevo Pedido</button>
@@ -114,7 +150,7 @@
                                     <div class="precio-original">$44.000</div>
                                     <div class="precio-efectivo">$42.000</div>
                                     <span class="badge badge-descuento">-$2.000 efectivo</span>
-                                    <p class="ingredientes mt-2">6 sabores a elección</p>
+                                    <p class="ingredientes mt-2">Con sumadores de sabores</p>
                                 </div>
                             </div>
                         </div>
@@ -141,7 +177,7 @@
                                     <div class="precio-original">$12.000</div>
                                     <div class="precio-efectivo">$11.000</div>
                                     <span class="badge badge-descuento">-$1.000 efectivo</span>
-                                    <p class="ingredientes mt-2">3 sabores a elección<br>Jamón y queso, lechuga, tomate, huevo, choclo, aceitunas</p>
+                                    <p class="ingredientes mt-2">Jamón y queso, lechuga, tomate, huevo, choclo, aceitunas</p>
                                 </div>
                             </div>
                         </div>
@@ -152,7 +188,7 @@
                                     <div class="precio-original">$22.000</div>
                                     <div class="precio-efectivo">$21.000</div>
                                     <span class="badge badge-descuento">-$1.000 efectivo</span>
-                                    <p class="ingredientes mt-2">3 sabores a elección</p>
+                                    <p class="ingredientes mt-2">Con sumadores de sabores</p>
                                 </div>
                             </div>
                         </div>
@@ -179,6 +215,135 @@
                                 <div>
                                     <button class="btn btn-warning btn-sm" onclick="limpiarCarrito()">Limpiar</button>
                                     <button class="btn btn-success" onclick="pasarAPedido()">Continuar Pedido</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PESTAÑA SÁNDWICHES POR PLANCHAS -->
+        <div class="tab-pane fade" id="planchas" role="tabpanel">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card" style="background: linear-gradient(135deg, #ff9a56 0%, #ff6b6b 100%); color: white;">
+                        <div class="card-body text-center">
+                            <h3>🍞 Pedido por Planchas</h3>
+                            <p class="mb-0">1 Plancha = 8 Sándwiches = 1 Sabor | Precio por plancha: $4.000</p>
+                        </div>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">🍞 Configurar Pedido por Planchas</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-4">
+                                        <label class="form-label"><strong>Cantidad de planchas:</strong></label>
+                                        <div class="d-flex align-items-center">
+                                            <button type="button" class="btn btn-outline-danger" onclick="cambiarCantidadPlanchas(-1)">-</button>
+                                            <input type="number" id="cantidadPlanchas" class="form-control mx-3" style="width: 100px;" min="1" value="1" readonly>
+                                            <button type="button" class="btn btn-outline-success" onclick="cambiarCantidadPlanchas(1)">+</button>
+                                            <span class="ms-3 text-muted">= <span id="totalSandwichesPlanchas">8</span> sándwiches</span>
+                                        </div>
+                                    </div>
+
+                                    <div class="alert alert-info">
+                                        <strong>Sabores a seleccionar: <span id="saboresASeleccionar">1</span></strong><br>
+                                        <small>Cada plancha necesita 1 sabor. Puedes repetir el mismo sabor en varias planchas.</small>
+                                    </div>
+
+                                    <h6>Seleccionar Sabores por Plancha:</h6>
+                                    <div class="row" id="saboresPorPlanchas">
+                                        <!-- Sabores se cargan aquí -->
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <button class="btn btn-warning btn-lg" onclick="agregarPedidoPlanchas()">
+                                            Agregar al Carrito - $<span id="precioPorPlanchas">4000</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <h5 class="mb-0">📋 Resumen del Pedido</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="resumenPlanchas">
+                                        <p><strong>Planchas:</strong> <span id="resumenCantidadPlanchas">1</span></p>
+                                        <p><strong>Sándwiches:</strong> <span id="resumenTotalSandwiches">8</span></p>
+                                        <p><strong>Precio por plancha:</strong> $4.000</p>
+                                        <p><strong>Total:</strong> $<span id="resumenTotalPlanchas">4000</span></p>
+                                        <hr>
+                                        <div id="resumenSaboresPlanchas">
+                                            <p class="text-muted">Selecciona sabores...</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="personalizados" role="tabpanel">
+            <div class="row">
+                <div class="col-12">
+                    <div class="card personalizados-card mb-4">
+                        <div class="card-body text-center">
+                            <h3>🎨 Crear Sándwich Personalizado</h3>
+                            <p class="mb-0">Selecciona los sabores que quieras, sin límites. Precio por unidad: $500</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">🥪 Configurar Sándwich</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label class="form-label">Cantidad de sándwiches:</label>
+                                        <input type="number" id="cantidadPersonalizada" class="form-control cantidad-input" min="1" value="1" onchange="actualizarPrecioPersonalizado()">
+                                    </div>
+
+                                    <h6>Seleccionar Sabores:</h6>
+                                    <div class="row" id="saboresPersonalizados">
+                                        <!-- Sabores se cargan aquí -->
+                                    </div>
+
+                                    <div class="text-center mt-4">
+                                        <button class="btn btn-success btn-lg" onclick="agregarPersonalizado()">
+                                            Agregar al Carrito - $<span id="precioPersonalizado">500</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="card border-info">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">📋 Resumen</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="resumenPersonalizado">
+                                        <p>Cantidad: <span id="resumenCantidad">1</span> sándwiches</p>
+                                        <p>Precio unitario: $500</p>
+                                        <p><strong>Total: $<span id="resumenTotal">500</span></strong></p>
+                                        <hr>
+                                        <div id="resumenSabores">
+                                            <p class="text-muted">Selecciona sabores...</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -237,8 +402,8 @@
                                         </div>
                                     </div>
                                     <div class="col-12">
-                                        <label for="observaciones" class="form-label">Observaciones/Sabores Especiales:</label>
-                                        <textarea class="form-control" name="observaciones" rows="3" placeholder="Ej: 16 de jamón y queso, 16 de jamón crudo, 16 de pollo..."></textarea>
+                                        <label for="observaciones" class="form-label">Observaciones Adicionales:</label>
+                                        <textarea class="form-control" name="observaciones" rows="3" placeholder="Observaciones generales del pedido..."></textarea>
                                     </div>
                                 </div>
                                 <hr>
@@ -374,26 +539,29 @@
     </div>
 </div>
 
-<!-- Modal para seleccionar sabores premium -->
-<div class="modal fade" id="modalSabores" tabindex="-1">
+<!-- Modal para seleccionar sabores premium con sumadores -->
+<div class="modal fade" id="modalSaboresPremium" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-warning">
-                <h5 class="modal-title">🌟 Seleccionar Sabores Premium</h5>
+                <h5 class="modal-title">🌟 Configurar Sabores Premium</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <p><strong>Selecciona <span id="cantidadSabores">3</span> sabores:</strong></p>
-                <div class="row" id="listaSabores">
-                    <!-- Sabores se cargan aquí -->
+                <div class="alert alert-info">
+                    <strong>Selecciona <span id="totalSandwichesPremium">6 sabores</span></strong><br>
+                    <small>Puedes repetir sabores. Cada contador representa cuántas veces quieres ese sabor.</small>
                 </div>
-                <div class="mt-3">
-                    <strong>Seleccionados: <span id="saboresSeleccionados">0</span> / <span id="maxSabores">3</span></strong>
+                <div class="row" id="listaSaboresPremium">
+                    <!-- Sabores con sumadores se cargan aquí -->
+                </div>
+                <div class="mt-3 text-center">
+                    <strong>Sabores seleccionados: <span id="saboresAsignados">0</span> / <span id="maxSandwiches">6</span></strong>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-success" onclick="confirmarSabores()">Confirmar Sabores</button>
+                <button type="button" class="btn btn-success" onclick="confirmarSaboresPremium()">Confirmar Sabores</button>
             </div>
         </div>
     </div>
@@ -405,8 +573,10 @@
 let carrito = [];
 let pedidos = JSON.parse(localStorage.getItem('pedidos')) || [];
 let clientesFijos = JSON.parse(localStorage.getItem('clientesFijos')) || [];
-let saboresPremium = ['Ananá', 'Atún', 'Berenjena', 'Durazno', 'Jamón Crudo', 'Morrón', 'Palmito', 'Panceta', 'Pollo', 'Roquefort', 'Salame'];
+let saboresPremium = ['Jamón y Queso', 'Ananá', 'Atún', 'Berenjena', 'Durazno', 'Jamón Crudo', 'Morrón', 'Palmito', 'Panceta', 'Pollo', 'Roquefort', 'Salame'];
 let productoTemporal = null;
+let saboresPersonalizadosSeleccionados = {};
+let saboresPorPlanchasSeleccionados = {};
 
 // Precios de productos
 const precios = {
@@ -419,11 +589,230 @@ const precios = {
     '24 Surtidos Premium': { efectivo: 21000, transferencia: 22000 }
 };
 
+// Inicializar sabores por planchas
+function inicializarSaboresPorPlanchas() {
+    const contenedor = document.getElementById('saboresPorPlanchas');
+    saboresPremium.forEach(sabor => {
+        saboresPorPlanchasSeleccionados[sabor] = 0;
+        
+        const div = document.createElement('div');
+        div.className = 'col-md-6 mb-3';
+        div.innerHTML = `
+            <div class="sabor-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><strong>${sabor}</strong></span>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-outline-danger btn-contador" onclick="cambiarCantidadSaborPlancha('${sabor}', -1)">-</button>
+                        <input type="number" class="form-control contador-sabor mx-2" id="plancha_${sabor}" value="0" min="0" readonly>
+                        <button type="button" class="btn btn-outline-success btn-contador" onclick="cambiarCantidadSaborPlancha('${sabor}', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        contenedor.appendChild(div);
+    });
+}
+
+// Cambiar cantidad de planchas
+function cambiarCantidadPlanchas(cambio) {
+    const cantidadActual = parseInt(document.getElementById('cantidadPlanchas').value);
+    const nuevaCantidad = Math.max(1, cantidadActual + cambio);
+    
+    document.getElementById('cantidadPlanchas').value = nuevaCantidad;
+    document.getElementById('totalSandwichesPlanchas').textContent = nuevaCantidad * 8;
+    document.getElementById('saboresASeleccionar').textContent = nuevaCantidad;
+    document.getElementById('precioPorPlanchas').textContent = (nuevaCantidad * 4000).toLocaleString();
+    
+    // Actualizar resumen
+    document.getElementById('resumenCantidadPlanchas').textContent = nuevaCantidad;
+    document.getElementById('resumenTotalSandwiches').textContent = nuevaCantidad * 8;
+    document.getElementById('resumenTotalPlanchas').textContent = (nuevaCantidad * 4000).toLocaleString();
+    
+    // Resetear sabores si se reduce la cantidad
+    const totalSaboresSeleccionados = Object.values(saboresPorPlanchasSeleccionados).reduce((a, b) => a + b, 0);
+    if (totalSaboresSeleccionados > nuevaCantidad) {
+        // Resetear todos los sabores
+        Object.keys(saboresPorPlanchasSeleccionados).forEach(sabor => {
+            saboresPorPlanchasSeleccionados[sabor] = 0;
+            document.getElementById(`plancha_${sabor}`).value = 0;
+        });
+        actualizarResumenPlanchas();
+    }
+}
+
+// Cambiar cantidad de sabor por plancha
+function cambiarCantidadSaborPlancha(sabor, cambio) {
+    const cantidadPlanchas = parseInt(document.getElementById('cantidadPlanchas').value);
+    const totalSaboresActual = Object.values(saboresPorPlanchasSeleccionados).reduce((a, b) => a + b, 0);
+    
+    let nuevaCantidad = saboresPorPlanchasSeleccionados[sabor] + cambio;
+    
+    // Validar límites
+    if (nuevaCantidad < 0) nuevaCantidad = 0;
+    if (cambio > 0 && totalSaboresActual >= cantidadPlanchas) {
+        alert(`❌ Ya tienes ${cantidadPlanchas} sabores seleccionados (1 por plancha).`);
+        return;
+    }
+    
+    saboresPorPlanchasSeleccionados[sabor] = nuevaCantidad;
+    document.getElementById(`plancha_${sabor}`).value = nuevaCantidad;
+    actualizarResumenPlanchas();
+}
+
+// Actualizar resumen de planchas
+function actualizarResumenPlanchas() {
+    const resumenSabores = document.getElementById('resumenSaboresPlanchas');
+    const saboresSeleccionados = Object.entries(saboresPorPlanchasSeleccionados)
+        .filter(([sabor, cantidad]) => cantidad > 0)
+        .map(([sabor, cantidad]) => `${sabor}: ${cantidad} plancha${cantidad > 1 ? 's' : ''}`)
+        .join('<br>');
+    
+    if (saboresSeleccionados) {
+        resumenSabores.innerHTML = `<strong>Sabores:</strong><br>${saboresSeleccionados}`;
+    } else {
+        resumenSabores.innerHTML = '<p class="text-muted">Selecciona sabores...</p>';
+    }
+}
+
+// Agregar pedido por planchas al carrito
+function agregarPedidoPlanchas() {
+    const cantidadPlanchas = parseInt(document.getElementById('cantidadPlanchas').value);
+    const totalSaboresSeleccionados = Object.values(saboresPorPlanchasSeleccionados).reduce((a, b) => a + b, 0);
+    
+    if (totalSaboresSeleccionados !== cantidadPlanchas) {
+        alert(`❌ Debes seleccionar exactamente ${cantidadPlanchas} sabores (1 por plancha). Tienes ${totalSaboresSeleccionados} seleccionados.`);
+        return;
+    }
+    
+    const saboresSeleccionados = Object.entries(saboresPorPlanchasSeleccionados)
+        .filter(([sabor, cant]) => cant > 0)
+        .map(([sabor, cant]) => `${sabor} (${cant} plancha${cant > 1 ? 's' : ''})`)
+        .join(', ');
+    
+    const item = {
+        producto: `Pedido por Planchas (${cantidadPlanchas} plancha${cantidadPlanchas > 1 ? 's' : ''})`,
+        precio: cantidadPlanchas * 4000,
+        cantidad: cantidadPlanchas * 8, // 8 sándwiches por plancha
+        sabores: saboresSeleccionados,
+        id: Date.now(),
+        porPlanchas: true,
+        planchas: cantidadPlanchas
+    };
+    
+    carrito.push(item);
+    actualizarCarrito();
+    mostrarCarrito();
+    
+    // Limpiar selección
+    Object.keys(saboresPorPlanchasSeleccionados).forEach(sabor => {
+        saboresPorPlanchasSeleccionados[sabor] = 0;
+        document.getElementById(`plancha_${sabor}`).value = 0;
+    });
+    document.getElementById('cantidadPlanchas').value = 1;
+    cambiarCantidadPlanchas(0); // Para actualizar los valores
+    actualizarResumenPlanchas();
+    
+    alert('✅ Pedido por planchas agregado al carrito');
+}
+
+// Inicializar sabores personalizados
+function inicializarSaboresPersonalizados() {
+    const contenedor = document.getElementById('saboresPersonalizados');
+    saboresPremium.forEach(sabor => {
+        saboresPersonalizadosSeleccionados[sabor] = 0;
+        
+        const div = document.createElement('div');
+        div.className = 'col-md-6 mb-3';
+        div.innerHTML = `
+            <div class="sabor-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><strong>${sabor}</strong></span>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-outline-danger btn-contador" onclick="cambiarCantidadPersonalizado('${sabor}', -1)">-</button>
+                        <input type="number" class="form-control contador-sabor mx-2" id="personalizado_${sabor}" value="0" min="0" readonly>
+                        <button type="button" class="btn btn-outline-success btn-contador" onclick="cambiarCantidadPersonalizado('${sabor}', 1)">+</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        contenedor.appendChild(div);
+    });
+}
+
+// Cambiar cantidad de sabor personalizado
+function cambiarCantidadPersonalizado(sabor, cambio) {
+    const nuevaCantidad = Math.max(0, saboresPersonalizadosSeleccionados[sabor] + cambio);
+    saboresPersonalizadosSeleccionados[sabor] = nuevaCantidad;
+    document.getElementById(`personalizado_${sabor}`).value = nuevaCantidad;
+    actualizarResumenPersonalizado();
+}
+
+// Actualizar precio personalizado
+function actualizarPrecioPersonalizado() {
+    const cantidad = parseInt(document.getElementById('cantidadPersonalizada').value) || 1;
+    const precio = cantidad * 500;
+    document.getElementById('precioPersonalizado').textContent = precio.toLocaleString();
+    document.getElementById('resumenCantidad').textContent = cantidad;
+    document.getElementById('resumenTotal').textContent = precio.toLocaleString();
+}
+
+// Actualizar resumen personalizado
+function actualizarResumenPersonalizado() {
+    const resumenSabores = document.getElementById('resumenSabores');
+    const saboresSeleccionados = Object.entries(saboresPersonalizadosSeleccionados)
+        .filter(([sabor, cantidad]) => cantidad > 0)
+        .map(([sabor, cantidad]) => `${sabor}: ${cantidad}`)
+        .join('<br>');
+    
+    if (saboresSeleccionados) {
+        resumenSabores.innerHTML = `<strong>Sabores:</strong><br>${saboresSeleccionados}`;
+    } else {
+        resumenSabores.innerHTML = '<p class="text-muted">Selecciona sabores...</p>';
+    }
+}
+
+// Agregar personalizado al carrito
+function agregarPersonalizado() {
+    const cantidad = parseInt(document.getElementById('cantidadPersonalizada').value) || 1;
+    const saboresSeleccionados = Object.entries(saboresPersonalizadosSeleccionados)
+        .filter(([sabor, cant]) => cant > 0)
+        .map(([sabor, cant]) => `${sabor} (${cant})`);
+    
+    if (saboresSeleccionados.length === 0) {
+        alert('❌ Debes seleccionar al menos un sabor');
+        return;
+    }
+    
+    const item = {
+        producto: `Sándwich Personalizado x${cantidad}`,
+        precio: cantidad * 500,
+        cantidad: cantidad,
+        sabores: saboresSeleccionados.join(', '),
+        id: Date.now(),
+        personalizado: true
+    };
+    
+    carrito.push(item);
+    actualizarCarrito();
+    mostrarCarrito();
+    
+    // Limpiar selección
+    Object.keys(saboresPersonalizadosSeleccionados).forEach(sabor => {
+        saboresPersonalizadosSeleccionados[sabor] = 0;
+        document.getElementById(`personalizado_${sabor}`).value = 0;
+    });
+    document.getElementById('cantidadPersonalizada').value = 1;
+    actualizarPrecioPersonalizado();
+    actualizarResumenPersonalizado();
+    
+    alert('✅ Sándwich personalizado agregado al carrito');
+}
+
 // Agregar producto al carrito
 function agregarAlPedido(producto, precio, cantidad) {
     if (producto.includes('Premium')) {
         productoTemporal = { producto, precio, cantidad };
-        mostrarModalSabores(producto);
+        mostrarModalSaboresPremium(producto);
     } else {
         const item = {
             producto: producto,
@@ -438,68 +827,100 @@ function agregarAlPedido(producto, precio, cantidad) {
     }
 }
 
-// Mostrar modal de sabores
-function mostrarModalSabores(producto) {
-    const cantidadSabores = producto.includes('48') ? 6 : 3;
-    document.getElementById('cantidadSabores').textContent = cantidadSabores;
-    document.getElementById('maxSabores').textContent = cantidadSabores;
+// Mostrar modal de sabores premium con sumadores
+function mostrarModalSaboresPremium(producto) {
+    const cantidadSabores = producto.includes('48') ? 6 : 3; // 6 sabores para 48, 3 para 24
+    document.getElementById('totalSandwichesPremium').textContent = `${cantidadSabores} sabores`;
+    document.getElementById('maxSandwiches').textContent = cantidadSabores;
     
-    const listaSabores = document.getElementById('listaSabores');
+    const listaSabores = document.getElementById('listaSaboresPremium');
     listaSabores.innerHTML = '';
     
+    const saboresTemporales = {};
+    
     saboresPremium.forEach(sabor => {
+        saboresTemporales[sabor] = 0;
+        
         const div = document.createElement('div');
-        div.className = 'col-md-4 mb-2';
+        div.className = 'col-md-6 mb-3';
         div.innerHTML = `
-            <div class="form-check">
-                <input class="form-check-input sabor-checkbox" type="checkbox" value="${sabor}" id="sabor_${sabor}" onchange="verificarSeleccion()">
-                <label class="form-check-label" for="sabor_${sabor}">${sabor}</label>
+            <div class="sabor-item">
+                <div class="d-flex justify-content-between align-items-center">
+                    <span><strong>${sabor}</strong></span>
+                    <div class="d-flex align-items-center">
+                        <button type="button" class="btn btn-outline-danger btn-contador" onclick="cambiarCantidadPremium('${sabor}', -1)">-</button>
+                        <input type="number" class="form-control contador-sabor mx-2" id="premium_${sabor}" value="0" min="0" readonly>
+                        <button type="button" class="btn btn-outline-success btn-contador" onclick="cambiarCantidadPremium('${sabor}', 1)">+</button>
+                    </div>
+                </div>
             </div>
         `;
         listaSabores.appendChild(div);
     });
     
-    document.getElementById('saboresSeleccionados').textContent = '0';
-    new bootstrap.Modal(document.getElementById('modalSabores')).show();
+    // Guardar referencia temporal
+    window.saboresTemporalesPremium = saboresTemporales;
+    window.maxSaboresPremium = cantidadSabores;
+    document.getElementById('saboresAsignados').textContent = '0';
+    
+    new bootstrap.Modal(document.getElementById('modalSaboresPremium')).show();
 }
 
-// Verificar selección de sabores
-function verificarSeleccion() {
-    const checkboxes = document.querySelectorAll('.sabor-checkbox:checked');
-    const maxSabores = parseInt(document.getElementById('maxSabores').textContent);
-    document.getElementById('saboresSeleccionados').textContent = checkboxes.length;
+// Cambiar cantidad de sabor premium
+function cambiarCantidadPremium(sabor, cambio) {
+    const maxSabores = window.maxSaboresPremium;
+    const totalActual = Object.values(window.saboresTemporalesPremium).reduce((a, b) => a + b, 0);
     
-    if (checkboxes.length >= maxSabores) {
-        document.querySelectorAll('.sabor-checkbox:not(:checked)').forEach(cb => cb.disabled = true);
-    } else {
-        document.querySelectorAll('.sabor-checkbox').forEach(cb => cb.disabled = false);
-    }
-}
-
-// Confirmar sabores seleccionados
-function confirmarSabores() {
-    const checkboxes = document.querySelectorAll('.sabor-checkbox:checked');
-    const maxSabores = parseInt(document.getElementById('maxSabores').textContent);
+    let nuevaCantidad = window.saboresTemporalesPremium[sabor] + cambio;
     
-    if (checkboxes.length !== maxSabores) {
-        alert(`Debe seleccionar exactamente ${maxSabores} sabores`);
+    // Validar límites
+    if (nuevaCantidad < 0) nuevaCantidad = 0;
+    if (cambio > 0 && totalActual >= maxSabores) {
+        alert(`❌ No puedes agregar más sabores. Máximo ${maxSabores} sabores.`);
         return;
     }
     
-    const saboresSeleccionados = Array.from(checkboxes).map(cb => cb.value);
+    window.saboresTemporalesPremium[sabor] = nuevaCantidad;
+    document.getElementById(`premium_${sabor}`).value = nuevaCantidad;
+    
+    // Actualizar contador
+    const totalAsignados = Object.values(window.saboresTemporalesPremium).reduce((a, b) => a + b, 0);
+    document.getElementById('saboresAsignados').textContent = totalAsignados;
+}
+
+// Confirmar sabores premium
+function confirmarSaboresPremium() {
+    const maxSabores = window.maxSaboresPremium;
+    const totalAsignados = Object.values(window.saboresTemporalesPremium).reduce((a, b) => a + b, 0);
+    
+    if (totalAsignados !== maxSabores) {
+        alert(`❌ Debes seleccionar exactamente ${maxSabores} sabores. Actualmente tienes ${totalAsignados}.`);
+        return;
+    }
+    
+    // Crear array de sabores (pueden repetirse)
+    const listaSabores = [];
+    Object.entries(window.saboresTemporalesPremium).forEach(([sabor, cantidad]) => {
+        for (let i = 0; i < cantidad; i++) {
+            listaSabores.push(sabor);
+        }
+    });
+    
     const item = {
         producto: productoTemporal.producto,
         precio: productoTemporal.precio,
         cantidad: productoTemporal.cantidad,
-        sabores: saboresSeleccionados.join(', '),
+        sabores: listaSabores.join(', '),
         id: Date.now()
     };
     
     carrito.push(item);
     actualizarCarrito();
     mostrarCarrito();
-    bootstrap.Modal.getInstance(document.getElementById('modalSabores')).hide();
+    bootstrap.Modal.getInstance(document.getElementById('modalSaboresPremium')).hide();
     productoTemporal = null;
+    window.saboresTemporalesPremium = null;
+    window.maxSaboresPremium = null;
 }
 
 // Actualizar precios según forma de pago
@@ -511,6 +932,7 @@ function actualizarPreciosPago() {
         if (precios[item.producto]) {
             item.precio = precios[item.producto][formaPago.toLowerCase()];
         }
+        // No cambiar precios de personalizados
     });
     
     actualizarCarrito();
@@ -530,15 +952,25 @@ function actualizarCarrito() {
     carrito.forEach((item, index) => {
         const div = document.createElement('div');
         div.className = 'border-bottom pb-2 mb-2';
+        
+        let detallesProducto = '';
+        if (item.personalizado) {
+            detallesProducto = `<small>${item.cantidad} sándwiches</small>`;
+        } else if (item.porPlanchas) {
+            detallesProducto = `<small>${item.planchas} plancha${item.planchas > 1 ? 's' : ''} - ${item.cantidad} sándwiches</small>`;
+        } else {
+            detallesProducto = `<small>${item.cantidad} sándwiches - ${(item.cantidad/24).toFixed(2)} planchas</small>`;
+        }
+        
         div.innerHTML = `
             <div class="d-flex justify-content-between">
                 <div>
                     <strong>${item.producto}</strong>
-                    <br><small>${item.cantidad} sándwiches - ${(item.cantidad/24).toFixed(2)} planchas</small>
+                    <br>${detallesProducto}
                     ${item.sabores ? `<br><small class="text-success">Sabores: ${item.sabores}</small>` : ''}
                 </div>
                 <div class="text-end">
-                    <div>$${item.precio.toLocaleString()}</div>
+                    <div>${item.precio.toLocaleString()}</div>
                     <button class="btn btn-sm btn-outline-danger" onclick="eliminarDelCarrito(${index})">🗑️</button>
                 </div>
             </div>
@@ -611,7 +1043,15 @@ document.getElementById('pedidoForm').addEventListener('submit', function(event)
         productos: [...carrito],
         total: carrito.reduce((sum, item) => sum + item.precio, 0),
         cantidad: carrito.reduce((sum, item) => sum + item.cantidad, 0),
-        planchas: (carrito.reduce((sum, item) => sum + item.cantidad, 0) / 24).toFixed(2),
+        planchas: (carrito.reduce((sum, item) => {
+            if (item.porPlanchas) {
+                return sum + item.planchas;
+            } else if (item.personalizado) {
+                return sum + (item.cantidad / 8); // Convertir sándwiches personalizados a planchas
+            } else {
+                return sum + (item.cantidad / 24); // Planchas normales
+            }
+        }, 0)).toFixed(2),
         estado: 'Pendiente'
     };
     
@@ -911,6 +1351,9 @@ function mostrarEstadisticas() {
 
 // Cargar datos iniciales
 document.addEventListener('DOMContentLoaded', function() {
+    inicializarSaboresPersonalizados();
+    inicializarSaboresPorPlanchas();
+    actualizarPrecioPersonalizado();
     cargarClientesFijos();
     cargarPedidos();
     
@@ -937,58 +1380,8 @@ function limpiarTodosLosDatos() {
         alert('✅ Todos los datos han sido eliminados');
     }
 }
-
-// Agregar algunos datos de ejemplo (solo para demostración)
-function cargarDatosEjemplo() {
-    if (pedidos.length === 0 && clientesFijos.length === 0) {
-        const clienteEjemplo = {
-            nombre: 'Juan',
-            apellido: 'Pérez',
-            contacto: '1123456789',
-            direccion: 'Av. Corrientes 1234',
-            modalidad: 'Retira',
-            producto: '24 Surtidos Premium',
-            observacion: 'Jamón crudo, roquefort, palmito',
-            id: Date.now()
-        };
-        
-        clientesFijos.push(clienteEjemplo);
-        localStorage.setItem('clientesFijos', JSON.stringify(clientesFijos));
-        
-        const pedidoEjemplo = {
-            id: Date.now() + 1,
-            fecha: new Date().toISOString(),
-            nombre: 'María',
-            apellido: 'González',
-            contacto: '1198765432',
-            direccion: 'Calle Falsa 123',
-            modalidad: 'Envío',
-            pago: 'Efectivo',
-            observaciones: '24 jamón y queso, 24 pollo',
-            productos: [{
-                producto: '48 Surtidos Especiales',
-                precio: 22000,
-                cantidad: 48,
-                sabores: '',
-                id: Date.now()
-            }],
-            total: 22000,
-            cantidad: 48,
-            planchas: '2.00',
-            estado: 'Pendiente'
-        };
-        
-        pedidos.push(pedidoEjemplo);
-        localStorage.setItem('pedidos', JSON.stringify(pedidos));
-        
-        cargarClientesFijos();
-        cargarPedidos();
-    }
-}
-
-// Cargar datos de ejemplo al inicio (comentar en producción)
-// cargarDatosEjemplo();
 </script>
 
 </body>
+
 </html>

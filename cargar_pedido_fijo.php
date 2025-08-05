@@ -1,9 +1,8 @@
 <?php
-$conexion = new mysqli("localhost", "root", "", "fabrica_sandwiches");
-if ($conexion->connect_error) {
-    die("Error de conexión: " . $conexion->connect_error);
-}
-
+   require_once '/var/www/html/sangucheria/config.php';
+   $conexion = getConnection();
+?>
+   
 if (isset($_GET['id'], $_GET['cantidad'])) {
     $id = intval($_GET['id']);
     $cantidad_pedidos = intval($_GET['cantidad']);
@@ -76,4 +75,5 @@ if (isset($_GET['id'], $_GET['cantidad'])) {
 $conexion->close();
 header("Location: clientes_fijos.php");
 exit;
+
 ?>
