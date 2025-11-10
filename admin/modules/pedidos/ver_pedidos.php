@@ -160,6 +160,9 @@ $stats = $pdo->query($stats_sql)->fetch();
                 <i class="fas fa-list-alt text-blue-500 mr-2"></i>Pedidos
             </h1>
             <div class="flex space-x-3">
+                <a href="delivery_simple.php" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow-lg">
+                    <i class="fas fa-map-marked-alt mr-2"></i>Mapa Delivery
+                </a>
                 <a href="../impresion/config.php" class="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded">
                     <i class="fas fa-print mr-2"></i>Config Impresora
                 </a>
